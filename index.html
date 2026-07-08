@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sổ Tay Từ Vựng Tiếng Anh</title>
+    <style>
+      :root {
+        --primary-color: #6366f1;
+        --primary-hover: #4f46e5;
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family:
+          'Segoe UI',
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Sidebar - Quản lý chủ đề */
+      .sidebar {
+        width: 280px;
+        background-color: var(--card-bg);
+        border-right: 1px solid var(--border-color);
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .topic-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .topic-item {
+        padding: 12px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 500;
+        color: var(--text-muted);
+      }
+
+      .topic-item:hover {
+        background-color: #f1f5f9;
+        color: var(--primary-color);
+      }
+
+      .topic-item.active {
+        background-color: var(--primary-color);
+        color: white;
+      }
+
+      /* Khu vực hiển thị chính */
+      .main-content {
+        flex: 1;
+        padding: 32px;
+        overflow-y: auto;
+      }
+
+      .header-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+      }
+
+      .header-actions h1 {
+        font-size: 28px;
+        color: var(--text-main);
+      }
+
+      /* Form thêm từ vựng */
+      .add-word-form {
+        background-color: var(--card-bg);
+        padding: 24px;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+        margin-bottom: 32px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr auto;
+        gap: 16px;
+        align-items: end;
+      }
+
+      @media (max-width: 768px) {
+        .add-word-form {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .input-group label {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+
+      input,
+      select {
+        padding: 12px 16px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s;
+        background-color: white;
+        font-family: inherit;
+        width: 100%;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: var(--primary-color);
+      }
+
+      /* --- TÙY CHỈNH COMBOBOX --- */
+      select {
+        cursor: pointer;
+
+        /* Ẩn mũi tên mặc định của trình duyệt */
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+
+        /* Thêm mũi tên tùy chỉnh (SVG) */
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+
+        /* Đặt vị trí mũi tên cách lề trái 80px (vừa sát chữ Noun/Verb...) */
+        background-position: 355px center;
+        background-size: 16px;
+      }
+
+      button {
+        padding: 12px 24px;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        height: 43px;
+      }
+
+      button:hover {
+        background-color: var(--primary-hover);
+      }
+
+      /* Lưới hiển thị thẻ từ vựng */
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
+      }
+
+      .vocab-card {
+        background-color: var(--card-bg);
+        padding: 24px;
+        border-radius: 16px;
+        box-shadow:
+          0 4px 6px -1px rgb(0 0 0 / 0.05),
+          0 2px 4px -2px rgb(0 0 0 / 0.05);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+        position: relative;
+      }
+
+      .vocab-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+      }
+
+      .word-en {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 4px;
+      }
+
+      .word-type {
+        font-size: 13px;
+        color: var(--text-muted);
+        font-style: italic;
+        margin-bottom: 12px;
+        display: inline-block;
+      }
+
+      .word-vi {
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      .delete-btn {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: none;
+        color: #ef4444;
+        padding: 4px 8px;
+        height: auto;
+      }
+
+      .delete-btn:hover {
+        background-color: #fee2e2;
+        color: #b91c1c;
+      }
+    </style>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="logo">📚 Vocab Note</div>
+      <div class="input-group" style="margin-bottom: 16px">
+        <input
+          type="text"
+          id="newTopicInput"
+          placeholder="Thêm chủ đề mới..."
+        />
+        <button onclick="addTopic()" style="margin-top: 8px; width: 100%">
+          + Thêm chủ đề
+        </button>
+      </div>
+      <ul class="topic-list" id="topicList"></ul>
+    </aside>
+
+    <main class="main-content">
+      <div class="header-actions">
+        <h1 id="currentTopicTitle">Chủ đề: General</h1>
+      </div>
+
+      <div class="add-word-form">
+        <div class="input-group">
+          <label>Từ tiếng Anh</label>
+          <input type="text" id="wordInput" placeholder="VD: Application" />
+        </div>
+
+        <div class="input-group">
+          <label>Loại từ</label>
+          <select id="typeInput">
+            <option value="Noun">Noun</option>
+            <option value="Verb">Verb</option>
+            <option value="Adj">Adj</option>
+            <option value="Adv">Adv</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Nghĩa tiếng Việt</label>
+          <input type="text" id="meaningInput" placeholder="VD: Ứng dụng" />
+        </div>
+
+        <button onclick="addWord()">Lưu Từ Vựng</button>
+      </div>
+
+      <div class="vocab-grid" id="vocabGrid"></div>
+    </main>
+
+    <script>
+      // Dữ liệu mẫu ban đầu
+      let data = {
+        Technology: [
+          { id: 1, word: 'Database', type: 'Noun', meaning: 'Cơ sở dữ liệu' },
+          { id: 2, word: 'Deploy', type: 'Verb', meaning: 'Triển khai' }
+        ],
+        'Daily Life': [
+          { id: 3, word: 'Commute', type: 'Verb', meaning: 'Đi lại (đi làm)' }
+        ]
+      };
+
+      let currentTopic = 'Technology';
+
+      // Khởi tạo ứng dụng
+      function init() {
+        renderTopics();
+        renderVocab();
+      }
+
+      // Render danh sách chủ đề
+      function renderTopics() {
+        const topicList = document.getElementById('topicList');
+        topicList.innerHTML = '';
+
+        Object.keys(data).forEach((topic) => {
+          const li = document.createElement('li');
+          li.className = `topic-item ${topic === currentTopic ? 'active' : ''}`;
+          li.innerText = topic;
+          li.onclick = () => switchTopic(topic);
+          topicList.appendChild(li);
+        });
+        document.getElementById('currentTopicTitle').innerText =
+          `Chủ đề: ${currentTopic}`;
+      }
+
+      // Chuyển đổi giữa các chủ đề
+      function switchTopic(topic) {
+        currentTopic = topic;
+        renderTopics();
+        renderVocab();
+      }
+
+      // Thêm chủ đề mới
+      function addTopic() {
+        const input = document.getElementById('newTopicInput');
+        const newTopic = input.value.trim();
+
+        if (newTopic && !data[newTopic]) {
+          data[newTopic] = [];
+          input.value = '';
+          switchTopic(newTopic);
+        }
+      }
+
+      // Thêm từ vựng mới
+      function addWord() {
+        const word = document.getElementById('wordInput').value.trim();
+        const type = document.getElementById('typeInput').value;
+        const meaning = document.getElementById('meaningInput').value.trim();
+
+        if (!word || !meaning) {
+          alert('Vui lòng nhập Từ tiếng Anh và Nghĩa tiếng Việt!');
+          return;
+        }
+
+        const newWord = {
+          id: Date.now(),
+          word: word,
+          type: type,
+          meaning: meaning
+        };
+
+        data[currentTopic].push(newWord);
+
+        // Reset form sau khi thêm
+        document.getElementById('wordInput').value = '';
+        document.getElementById('typeInput').value = 'Noun';
+        document.getElementById('meaningInput').value = '';
+
+        renderVocab();
+      }
+
+      // Xóa từ vựng
+      function deleteWord(id) {
+        data[currentTopic] = data[currentTopic].filter(
+          (word) => word.id !== id
+        );
+        renderVocab();
+      }
+
+      // Render lưới từ vựng
+      function renderVocab() {
+        const grid = document.getElementById('vocabGrid');
+        grid.innerHTML = '';
+
+        const words = data[currentTopic] || [];
+
+        if (words.length === 0) {
+          grid.innerHTML =
+            '<p style="color: var(--text-muted); grid-column: 1 / -1;">Chưa có từ vựng nào trong chủ đề này.</p>';
+          return;
+        }
+
+        words.forEach((item) => {
+          const card = document.createElement('div');
+          card.className = 'vocab-card';
+          card.innerHTML = `
+                    <button class="delete-btn" onclick="deleteWord(${item.id})">✕</button>
+                    <div class="word-en">${item.word}</div>
+                    <div class="word-type">(${item.type})</div>
+                    <div class="word-vi">${item.meaning}</div>
+                `;
+          grid.appendChild(card);
+        });
+      }
+
+      // Chạy ứng dụng
+      init();
+    </script>
+  </body>
+</html>

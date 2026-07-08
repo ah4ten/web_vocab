@@ -31,6 +31,7 @@
         color: var(--text-main);
         display: flex;
         min-height: 100vh;
+        overflow-x: hidden;
       }
 
       /* Sidebar - Quản lý chủ đề */
@@ -42,6 +43,8 @@
         display: flex;
         flex-direction: column;
         gap: 20px;
+        flex-shrink: 0;
+        transition: transform 0.3s ease;
       }
 
       .logo {
@@ -59,6 +62,7 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
+        overflow-y: auto;
       }
 
       .topic-item {
@@ -80,18 +84,44 @@
         color: white;
       }
 
+      /* Lớp phủ cho Mobile */
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.4);
+        z-index: 998;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
       /* Khu vực hiển thị chính */
       .main-content {
         flex: 1;
         padding: 32px;
         overflow-y: auto;
+        width: 100%;
       }
 
       .header-actions {
         display: flex;
-        justify-content: space-between;
         align-items: center;
         margin-bottom: 32px;
+        gap: 16px;
+      }
+
+      .menu-toggle {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 28px;
+        color: var(--text-main);
+        cursor: pointer;
+        padding: 0;
+        height: auto;
       }
 
       .header-actions h1 {
@@ -110,12 +140,6 @@
         grid-template-columns: 1fr 1fr 1fr auto;
         gap: 16px;
         align-items: end;
-      }
-
-      @media (max-width: 768px) {
-        .add-word-form {
-          grid-template-columns: 1fr;
-        }
       }
 
       .input-group {
@@ -148,22 +172,16 @@
         border-color: var(--primary-color);
       }
 
-      /* --- TÙY CHỈNH COMBOBOX --- */
       select {
         cursor: pointer;
-
-        /* Ẩn mũi tên mặc định của trình duyệt */
         appearance: none;
         -webkit-appearance: none;
         -moz-appearance: none;
-
-        /* Thêm mũi tên tùy chỉnh (SVG) */
         background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
         background-repeat: no-repeat;
-
-        /* Đặt vị trí mũi tên cách lề trái 80px (vừa sát chữ Noun/Verb...) */
-        background-position: 355px center;
+        background-position: calc(100% - 12px) center; /* Điều chỉnh để luôn đẹp trên mọi màn hình */
         background-size: 16px;
+        padding-right: 36px;
       }
 
       button {
@@ -186,8 +204,8 @@
       /* Lưới hiển thị thẻ từ vựng */
       .vocab-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 24px;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 20px;
       }
 
       .vocab-card {
@@ -242,10 +260,64 @@
         background-color: #fee2e2;
         color: #b91c1c;
       }
+
+      /* =========================================
+           THIẾT KẾ RESPONSIVE CHO ĐIỆN THOẠI
+           ========================================= */
+      @media (max-width: 768px) {
+        .sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 100vh;
+          z-index: 999;
+          transform: translateX(-100%); /* Ẩn sidebar đi */
+          box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar.active {
+          transform: translateX(0); /* Hiện sidebar khi có class active */
+        }
+
+        .overlay.active {
+          display: block;
+          opacity: 1;
+        }
+
+        .menu-toggle {
+          display: block; /* Hiện nút Menu */
+        }
+
+        .main-content {
+          padding: 20px 16px;
+        }
+
+        .header-actions h1 {
+          font-size: 22px;
+        }
+
+        /* Chuyển form nhập liệu thành xếp dọc */
+        .add-word-form {
+          grid-template-columns: 1fr;
+          gap: 12px;
+          padding: 20px;
+        }
+
+        button {
+          width: 100%;
+          margin-top: 8px;
+        }
+
+        .vocab-grid {
+          grid-template-columns: 1fr; /* 1 thẻ 1 hàng trên điện thoại */
+        }
+      }
     </style>
   </head>
   <body>
-    <aside class="sidebar">
+    <div class="overlay" id="mobileOverlay" onclick="window.toggleMenu()"></div>
+
+    <aside class="sidebar" id="sidebar">
       <div class="logo">📚 Vocab Note</div>
       <div class="input-group" style="margin-bottom: 16px">
         <input
@@ -253,8 +325,11 @@
           id="newTopicInput"
           placeholder="Thêm chủ đề mới..."
         />
-        <button onclick="addTopic()" style="margin-top: 8px; width: 100%">
-          + Thêm chủ đề
+        <button
+          onclick="window.addTopic()"
+          style="margin-top: 8px; width: 100%"
+        >
+          + Thêm
         </button>
       </div>
       <ul class="topic-list" id="topicList"></ul>
@@ -262,7 +337,8 @@
 
     <main class="main-content">
       <div class="header-actions">
-        <h1 id="currentTopicTitle">Chủ đề: General</h1>
+        <button class="menu-toggle" onclick="window.toggleMenu()">☰</button>
+        <h1 id="currentTopicTitle">Đang tải dữ liệu...</h1>
       </div>
 
       <div class="add-word-form">
@@ -286,69 +362,112 @@
           <input type="text" id="meaningInput" placeholder="VD: Ứng dụng" />
         </div>
 
-        <button onclick="addWord()">Lưu Từ Vựng</button>
+        <button onclick="window.addWord()">Lưu Từ Vựng</button>
       </div>
 
       <div class="vocab-grid" id="vocabGrid"></div>
     </main>
 
-    <script>
-      // Dữ liệu mẫu ban đầu
-      let data = {
-        Technology: [
-          { id: 1, word: 'Database', type: 'Noun', meaning: 'Cơ sở dữ liệu' },
-          { id: 2, word: 'Deploy', type: 'Verb', meaning: 'Triển khai' }
-        ],
-        'Daily Life': [
-          { id: 3, word: 'Commute', type: 'Verb', meaning: 'Đi lại (đi làm)' }
-        ]
+    <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+      import {
+        getFirestore,
+        collection,
+        addDoc,
+        onSnapshot,
+        deleteDoc,
+        doc,
+        serverTimestamp,
+        query,
+        orderBy
+      } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+      // ==========================================
+      // ⚠️ COPY CẤU HÌNH FIREBASE CỦA BẠN VÀO ĐÂY
+      // ==========================================
+      const firebaseConfig = {
+        apiKey: 'Dán-API-Key-Của-Bạn-Vào-Đây',
+        authDomain: 'ten-du-an.firebaseapp.com',
+        projectId: 'ten-du-an',
+        storageBucket: 'ten-du-an.appspot.com',
+        messagingSenderId: '123456789',
+        appId: '1:123456789:web:abcdef'
       };
 
-      let currentTopic = 'Technology';
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
 
-      // Khởi tạo ứng dụng
-      function init() {
+      let currentTopic = 'General';
+      let topicsArray = ['General'];
+      let allWords = [];
+
+      // Toggle Sidebar trên Mobile
+      window.toggleMenu = () => {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('mobileOverlay').classList.toggle('active');
+      };
+
+      const q = query(
+        collection(db, 'vocabularies'),
+        orderBy('createdAt', 'desc')
+      );
+      onSnapshot(q, (snapshot) => {
+        allWords = [];
+        let tempTopics = new Set(['General']);
+
+        snapshot.forEach((doc) => {
+          const wordData = { id: doc.id, ...doc.data() };
+          allWords.push(wordData);
+          if (wordData.topic) tempTopics.add(wordData.topic);
+        });
+
+        if (!tempTopics.has(currentTopic)) {
+          tempTopics.add(currentTopic);
+        }
+
+        topicsArray = Array.from(tempTopics);
         renderTopics();
         renderVocab();
-      }
+      });
 
-      // Render danh sách chủ đề
       function renderTopics() {
         const topicList = document.getElementById('topicList');
         topicList.innerHTML = '';
 
-        Object.keys(data).forEach((topic) => {
+        topicsArray.forEach((topic) => {
           const li = document.createElement('li');
           li.className = `topic-item ${topic === currentTopic ? 'active' : ''}`;
           li.innerText = topic;
-          li.onclick = () => switchTopic(topic);
+          li.onclick = () => window.switchTopic(topic);
           topicList.appendChild(li);
         });
         document.getElementById('currentTopicTitle').innerText =
           `Chủ đề: ${currentTopic}`;
       }
 
-      // Chuyển đổi giữa các chủ đề
-      function switchTopic(topic) {
+      window.switchTopic = (topic) => {
         currentTopic = topic;
         renderTopics();
         renderVocab();
-      }
+        // Tự động đóng menu trên điện thoại sau khi chọn chủ đề
+        if (window.innerWidth <= 768) {
+          document.getElementById('sidebar').classList.remove('active');
+          document.getElementById('mobileOverlay').classList.remove('active');
+        }
+      };
 
-      // Thêm chủ đề mới
-      function addTopic() {
+      window.addTopic = () => {
         const input = document.getElementById('newTopicInput');
         const newTopic = input.value.trim();
 
-        if (newTopic && !data[newTopic]) {
-          data[newTopic] = [];
+        if (newTopic && !topicsArray.includes(newTopic)) {
+          topicsArray.push(newTopic);
           input.value = '';
-          switchTopic(newTopic);
+          window.switchTopic(newTopic);
         }
-      }
+      };
 
-      // Thêm từ vựng mới
-      function addWord() {
+      window.addWord = async () => {
         const word = document.getElementById('wordInput').value.trim();
         const type = document.getElementById('typeInput').value;
         const meaning = document.getElementById('meaningInput').value.trim();
@@ -358,49 +477,53 @@
           return;
         }
 
-        const newWord = {
-          id: Date.now(),
-          word: word,
-          type: type,
-          meaning: meaning
-        };
+        try {
+          await addDoc(collection(db, 'vocabularies'), {
+            word: word,
+            type: type,
+            meaning: meaning,
+            topic: currentTopic,
+            createdAt: serverTimestamp()
+          });
 
-        data[currentTopic].push(newWord);
+          document.getElementById('wordInput').value = '';
+          document.getElementById('typeInput').value = 'Noun';
+          document.getElementById('meaningInput').value = '';
+        } catch (error) {
+          console.error('Lỗi thêm từ vựng: ', error);
+          alert('Đã xảy ra lỗi khi lưu dữ liệu!');
+        }
+      };
 
-        // Reset form sau khi thêm
-        document.getElementById('wordInput').value = '';
-        document.getElementById('typeInput').value = 'Noun';
-        document.getElementById('meaningInput').value = '';
+      window.deleteWord = async (docId) => {
+        if (confirm('Bạn có chắc chắn muốn xóa từ này?')) {
+          try {
+            await deleteDoc(doc(db, 'vocabularies', docId));
+          } catch (error) {
+            console.error('Lỗi xóa từ vựng: ', error);
+          }
+        }
+      };
 
-        renderVocab();
-      }
-
-      // Xóa từ vựng
-      function deleteWord(id) {
-        data[currentTopic] = data[currentTopic].filter(
-          (word) => word.id !== id
-        );
-        renderVocab();
-      }
-
-      // Render lưới từ vựng
       function renderVocab() {
         const grid = document.getElementById('vocabGrid');
         grid.innerHTML = '';
 
-        const words = data[currentTopic] || [];
+        const currentWords = allWords.filter(
+          (item) => item.topic === currentTopic
+        );
 
-        if (words.length === 0) {
+        if (currentWords.length === 0) {
           grid.innerHTML =
             '<p style="color: var(--text-muted); grid-column: 1 / -1;">Chưa có từ vựng nào trong chủ đề này.</p>';
           return;
         }
 
-        words.forEach((item) => {
+        currentWords.forEach((item) => {
           const card = document.createElement('div');
           card.className = 'vocab-card';
           card.innerHTML = `
-                    <button class="delete-btn" onclick="deleteWord(${item.id})">✕</button>
+                    <button class="delete-btn" onclick="window.deleteWord('${item.id}')">✕</button>
                     <div class="word-en">${item.word}</div>
                     <div class="word-type">(${item.type})</div>
                     <div class="word-vi">${item.meaning}</div>
@@ -408,9 +531,6 @@
           grid.appendChild(card);
         });
       }
-
-      // Chạy ứng dụng
-      init();
     </script>
   </body>
 </html>

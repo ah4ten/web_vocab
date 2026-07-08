@@ -8,11 +8,11 @@
       :root {
         --primary-color: #6366f1;
         --primary-hover: #4f46e5;
-        --bg-color: #f8fafc;
-        --card-bg: #ffffff;
-        --text-main: #1e293b;
-        --text-muted: #64748b;
-        --border-color: #e2e8f0;
+        --bg-color: #121212; /* Nền tối như trong ảnh của bạn */
+        --card-bg: #1e1e1e;
+        --text-main: #ffffff;
+        --text-muted: #a1a1aa;
+        --border-color: #333333;
       }
 
       * {
@@ -75,7 +75,7 @@
       }
 
       .topic-item:hover {
-        background-color: #f1f5f9;
+        background-color: #2d2d2d;
         color: var(--primary-color);
       }
 
@@ -92,7 +92,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: rgba(0, 0, 0, 0.4);
+        background-color: rgba(0, 0, 0, 0.6);
         z-index: 998;
         opacity: 0;
         transition: opacity 0.3s ease;
@@ -106,31 +106,31 @@
         width: 100%;
       }
 
+      /* KHU VỰC HEADER ĐÃ FIX */
       .header-actions {
         display: flex;
         align-items: center;
-        justify-content: flex-start; /* Ép nút menu và tiêu đề nằm sát nhau bên trái */
-        margin-bottom: 24px;
-        gap: 12px; /* Khoảng cách vừa phải giữa nút và chữ */
+        justify-content: flex-start; /* Khóa chặt các phần tử sang lề trái */
+        margin-bottom: 32px;
+        gap: 16px; /* Khoảng cách giữa nút menu và chữ */
       }
 
       .menu-toggle {
         display: none;
         background: none;
         border: none;
-        font-size: 26px;
+        font-size: 28px;
         color: var(--text-main);
         cursor: pointer;
-        padding: 4px 8px 4px 0;
+        padding: 0;
+        height: auto;
         line-height: 1;
       }
 
       .header-actions h1 {
-        font-size: 24px; /* Thu nhỏ mặc định một chút */
+        font-size: 28px;
         color: var(--text-main);
         margin: 0;
-        text-align: left;
-        line-height: 1.2;
       }
 
       /* Form thêm từ vựng */
@@ -138,7 +138,7 @@
         background-color: var(--card-bg);
         padding: 24px;
         border-radius: 16px;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
         margin-bottom: 32px;
         display: grid;
         grid-template-columns: 1fr 1fr 1fr auto;
@@ -166,7 +166,8 @@
         font-size: 14px;
         outline: none;
         transition: border-color 0.2s;
-        background-color: white;
+        background-color: transparent;
+        color: var(--text-main);
         font-family: inherit;
         width: 100%;
       }
@@ -181,11 +182,16 @@
         appearance: none;
         -webkit-appearance: none;
         -moz-appearance: none;
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
         background-repeat: no-repeat;
-        background-position: calc(100% - 12px) center; /* Điều chỉnh để luôn đẹp trên mọi màn hình */
+        background-position: calc(100% - 12px) center;
         background-size: 16px;
         padding-right: 36px;
+      }
+
+      select option {
+        background-color: var(--card-bg);
+        color: var(--text-main);
       }
 
       button {
@@ -216,18 +222,13 @@
         background-color: var(--card-bg);
         padding: 24px;
         border-radius: 16px;
-        box-shadow:
-          0 4px 6px -1px rgb(0 0 0 / 0.05),
-          0 2px 4px -2px rgb(0 0 0 / 0.05);
-        transition:
-          transform 0.2s,
-          box-shadow 0.2s;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        transition: transform 0.2s;
         position: relative;
       }
 
       .vocab-card:hover {
         transform: translateY(-4px);
-        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
       }
 
       .word-en {
@@ -260,11 +261,6 @@
         height: auto;
       }
 
-      .delete-btn:hover {
-        background-color: #fee2e2;
-        color: #b91c1c;
-      }
-
       /* =========================================
            THIẾT KẾ RESPONSIVE CHO ĐIỆN THOẠI
            ========================================= */
@@ -276,7 +272,7 @@
           height: 100vh;
           z-index: 999;
           transform: translateX(-100%);
-          box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+          box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
         }
 
         .sidebar.active {
@@ -296,15 +292,17 @@
           padding: 20px 16px;
         }
 
-        /* Cập nhật lại phần chữ trên điện thoại */
+        /* FIX MOBILE HEADER */
         .header-actions h1 {
-          font-size: 20px; /* Thu nhỏ đủ để vừa 1 dòng */
-          margin-top: 2px; /* Cân bằng quang học với nút menu */
+          font-size: 20px;
+          white-space: nowrap; /* Ép không xuống dòng */
+          overflow: hidden;
+          text-overflow: ellipsis; /* Nếu tên chủ đề quá dài sẽ hiện dấu 3 chấm */
         }
 
         .add-word-form {
           grid-template-columns: 1fr;
-          gap: 12px;
+          gap: 16px;
           padding: 20px;
         }
 
@@ -406,7 +404,6 @@
       let topicsArray = ['General'];
       let allWords = [];
 
-      // Toggle Sidebar trên Mobile
       window.toggleMenu = () => {
         document.getElementById('sidebar').classList.toggle('active');
         document.getElementById('mobileOverlay').classList.toggle('active');
@@ -454,7 +451,6 @@
         currentTopic = topic;
         renderTopics();
         renderVocab();
-        // Tự động đóng menu trên điện thoại sau khi chọn chủ đề
         if (window.innerWidth <= 768) {
           document.getElementById('sidebar').classList.remove('active');
           document.getElementById('mobileOverlay').classList.remove('active');

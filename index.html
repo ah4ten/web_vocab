@@ -8,7 +8,7 @@
       :root {
         --primary-color: #6366f1;
         --primary-hover: #4f46e5;
-        --bg-color: #121212; /* Nền tối như trong ảnh của bạn */
+        --bg-color: #121212;
         --card-bg: #1e1e1e;
         --text-main: #ffffff;
         --text-muted: #a1a1aa;
@@ -106,13 +106,13 @@
         width: 100%;
       }
 
-      /* KHU VỰC HEADER ĐÃ FIX */
+      /* HEADER CHÍNH */
       .header-actions {
         display: flex;
         align-items: center;
-        justify-content: flex-start; /* Khóa chặt các phần tử sang lề trái */
+        gap: 12px;
         margin-bottom: 32px;
-        gap: 16px; /* Khoảng cách giữa nút menu và chữ */
+        width: 100%;
       }
 
       .menu-toggle {
@@ -122,15 +122,18 @@
         font-size: 28px;
         color: var(--text-main);
         cursor: pointer;
-        padding: 0;
-        height: auto;
+        padding: 4px;
         line-height: 1;
       }
 
       .header-actions h1 {
+        flex: 1; /* Để chữ tự do chiếm hết không gian còn lại */
         font-size: 28px;
         color: var(--text-main);
         margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; /* Hiện dấu 3 chấm nếu chữ quá dài */
       }
 
       /* Form thêm từ vựng */
@@ -138,7 +141,7 @@
         background-color: var(--card-bg);
         padding: 24px;
         border-radius: 16px;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         margin-bottom: 32px;
         display: grid;
         grid-template-columns: 1fr 1fr 1fr auto;
@@ -218,13 +221,18 @@
         gap: 20px;
       }
 
+      /* THẺ TỪ VỰNG */
       .vocab-card {
         background-color: var(--card-bg);
         padding: 24px;
         border-radius: 16px;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         transition: transform 0.2s;
-        position: relative;
+        position: relative; /* Trục tọa độ để ghim dấu X */
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
       }
 
       .vocab-card:hover {
@@ -236,6 +244,7 @@
         font-weight: bold;
         color: var(--primary-color);
         margin-bottom: 4px;
+        padding-right: 30px; /* Nhường chỗ để chữ không đè lên dấu X */
       }
 
       .word-type {
@@ -251,14 +260,26 @@
         font-weight: 500;
       }
 
+      /* NÚT XÓA - ĐÓNG ĐINH Ở GÓC */
       .delete-btn {
-        position: absolute;
-        top: 16px;
-        right: 16px;
+        position: absolute; /* Ghim vị trí */
+        top: 12px; /* Cách mép trên 12px */
+        right: 12px; /* Cách mép phải 12px */
         background: none;
         color: #ef4444;
-        padding: 4px 8px;
-        height: auto;
+        border: none;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 18px;
+        padding: 0;
+        border-radius: 50%;
+      }
+
+      .delete-btn:hover {
+        background-color: rgba(239, 68, 68, 0.1);
       }
 
       /* =========================================
@@ -284,20 +305,21 @@
           opacity: 1;
         }
 
-        .menu-toggle {
-          display: block; /* Hiện nút Menu */
-        }
-
         .main-content {
           padding: 20px 16px;
         }
 
-        /* FIX MOBILE HEADER */
+        .header-actions {
+          margin-bottom: 24px;
+        }
+
+        .menu-toggle {
+          display: block; /* Hiện nút Menu */
+          margin-left: -8px; /* Kéo nút 3 gạch sát ra lề trái */
+        }
+
         .header-actions h1 {
-          font-size: 20px;
-          white-space: nowrap; /* Ép không xuống dòng */
-          overflow: hidden;
-          text-overflow: ellipsis; /* Nếu tên chủ đề quá dài sẽ hiện dấu 3 chấm */
+          font-size: 22px; /* Cỡ chữ vừa phải để nằm ngoan trên 1 dòng */
         }
 
         .add-word-form {

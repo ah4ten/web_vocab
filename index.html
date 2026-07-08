@@ -109,24 +109,28 @@
       .header-actions {
         display: flex;
         align-items: center;
-        margin-bottom: 32px;
-        gap: 16px;
+        justify-content: flex-start; /* Ép nút menu và tiêu đề nằm sát nhau bên trái */
+        margin-bottom: 24px;
+        gap: 12px; /* Khoảng cách vừa phải giữa nút và chữ */
       }
 
       .menu-toggle {
         display: none;
         background: none;
         border: none;
-        font-size: 28px;
+        font-size: 26px;
         color: var(--text-main);
         cursor: pointer;
-        padding: 0;
-        height: auto;
+        padding: 4px 8px 4px 0;
+        line-height: 1;
       }
 
       .header-actions h1 {
-        font-size: 28px;
+        font-size: 24px; /* Thu nhỏ mặc định một chút */
         color: var(--text-main);
+        margin: 0;
+        text-align: left;
+        line-height: 1.2;
       }
 
       /* Form thêm từ vựng */
@@ -271,12 +275,12 @@
           left: 0;
           height: 100vh;
           z-index: 999;
-          transform: translateX(-100%); /* Ẩn sidebar đi */
+          transform: translateX(-100%);
           box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
         }
 
         .sidebar.active {
-          transform: translateX(0); /* Hiện sidebar khi có class active */
+          transform: translateX(0);
         }
 
         .overlay.active {
@@ -292,11 +296,12 @@
           padding: 20px 16px;
         }
 
+        /* Cập nhật lại phần chữ trên điện thoại */
         .header-actions h1 {
-          font-size: 22px;
+          font-size: 20px; /* Thu nhỏ đủ để vừa 1 dòng */
+          margin-top: 2px; /* Cân bằng quang học với nút menu */
         }
 
-        /* Chuyển form nhập liệu thành xếp dọc */
         .add-word-form {
           grid-template-columns: 1fr;
           gap: 12px;
@@ -309,7 +314,7 @@
         }
 
         .vocab-grid {
-          grid-template-columns: 1fr; /* 1 thẻ 1 hàng trên điện thoại */
+          grid-template-columns: 1fr;
         }
       }
     </style>

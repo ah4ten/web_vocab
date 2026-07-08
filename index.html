@@ -29,22 +29,25 @@
       body {
         background-color: var(--bg-color);
         color: var(--text-main);
-        display: flex;
+        display: block; /* Đổi về block để không bị lỗi co giãn toàn trang */
         min-height: 100vh;
         overflow-x: hidden;
       }
 
       /* Sidebar - Quản lý chủ đề */
       .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 280px;
+        height: 100vh;
         background-color: var(--card-bg);
         border-right: 1px solid var(--border-color);
         padding: 24px;
         display: flex;
         flex-direction: column;
         gap: 20px;
-        flex-shrink: 0;
-        transition: transform 0.3s ease;
+        z-index: 100;
       }
 
       .logo {
@@ -100,23 +103,20 @@
 
       /* Khu vực hiển thị chính */
       .main-content {
-        flex: 1;
+        margin-left: 280px; /* Chừa chỗ cho sidebar trên máy tính */
         padding: 32px;
-        overflow-y: auto;
-        width: 100%;
+        min-height: 100vh;
+        width: calc(100% - 280px);
       }
 
       /* =========================================
-           HEADER CHÍNH - ĐÃ SỬA LỖI MẤT CHỮ
+           HEADER CHÍNH - DÙNG CÁCH CỔ ĐIỂN SIÊU BỀN
            ========================================= */
       .header-actions {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: flex-start; /* Ép tất cả dạt sang trái */
-        margin-bottom: 32px;
+        display: block; /* Không dùng flex nữa */
         width: 100%;
-        gap: 16px;
+        margin-bottom: 32px;
+        white-space: nowrap; /* Cấm xuống dòng cho toàn bộ khu vực này */
       }
 
       .menu-toggle {
@@ -126,17 +126,20 @@
         font-size: 28px;
         color: var(--text-main);
         cursor: pointer;
-        padding: 4px;
-        line-height: 1;
-        flex-shrink: 0; /* Khóa cứng kích thước, không cho phép bị bóp méo */
+        padding: 0;
+        margin-right: 12px;
+        vertical-align: middle; /* Căn giữa theo chiều dọc với chữ */
       }
 
       .header-actions h1 {
+        display: inline-block; /* Xếp hàng ngang với nút */
+        vertical-align: middle; /* Căn giữa theo chiều dọc với nút */
         font-size: 28px;
         color: var(--text-main);
         margin: 0;
-        text-align: left;
-        word-break: break-word; /* An toàn nhất: Tự xuống dòng nếu quá dài */
+        max-width: calc(100% - 50px); /* Chừa chỗ cho nút menu */
+        overflow: hidden;
+        text-overflow: ellipsis; /* Quá dài thì hiện dấu ... */
       }
 
       /* Form thêm từ vựng */
@@ -289,13 +292,9 @@
            ========================================= */
       @media (max-width: 768px) {
         .sidebar {
-          position: fixed;
-          top: 0;
-          left: 0;
-          height: 100vh;
-          z-index: 999;
           transform: translateX(-100%);
           box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
+          z-index: 999;
         }
 
         .sidebar.active {
@@ -308,22 +307,21 @@
         }
 
         .main-content {
+          margin-left: 0;
+          width: 100%;
           padding: 20px 16px;
         }
 
         .header-actions {
           margin-bottom: 24px;
-          gap: 12px;
         }
 
         .menu-toggle {
-          display: block;
-          margin-left: 0; /* Đưa sát mép trái */
+          display: inline-block; /* Bật hiển thị trên Mobile */
         }
 
         .header-actions h1 {
           font-size: 22px;
-          display: block; /* Đảm bảo chữ luôn hiển thị */
         }
 
         .add-word-form {

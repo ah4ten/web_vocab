@@ -425,6 +425,7 @@
     </main>
 
     <script type="module">
+      // Import thư viện Firebase trực tiếp từ link CDN (dành cho web thuần)
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
       import {
         getFirestore,
@@ -439,29 +440,34 @@
       } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
       // ==========================================
-      // ⚠️ COPY CẤU HÌNH FIREBASE CỦA BẠN VÀO ĐÂY
+      // ĐÂY LÀ CẤU HÌNH CỦA RIÊNG BẠN (Đã được dán sẵn)
       // ==========================================
       const firebaseConfig = {
-        apiKey: 'Dán-API-Key-Của-Bạn-Vào-Đây',
-        authDomain: 'ten-du-an.firebaseapp.com',
-        projectId: 'ten-du-an',
-        storageBucket: 'ten-du-an.appspot.com',
-        messagingSenderId: '123456789',
-        appId: '1:123456789:web:abcdef'
+        apiKey: 'AIzaSyD7VYvgSGd3wYRPWT2oZ1dlT-WOQ45LNRU',
+        authDomain: 'vocabnote-d6541.firebaseapp.com',
+        projectId: 'vocabnote-d6541',
+        storageBucket: 'vocabnote-d6541.firebasestorage.app',
+        messagingSenderId: '642568306619',
+        appId: '1:642568306619:web:73ee53fbec9cd979eb0e9e',
+        measurementId: 'G-R533ZKN85L'
       };
 
+      // Khởi tạo Firebase App và Database
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
+      // Biến toàn cục
       let currentTopic = 'General';
       let topicsArray = ['General'];
       let allWords = [];
 
+      // Toggle Sidebar trên Mobile
       window.toggleMenu = () => {
         document.getElementById('sidebar').classList.toggle('active');
         document.getElementById('mobileOverlay').classList.toggle('active');
       };
 
+      // Lắng nghe dữ liệu Database theo thời gian thực
       const q = query(
         collection(db, 'vocabularies'),
         orderBy('createdAt', 'desc')
@@ -538,7 +544,7 @@
 
       // Hàm xóa toàn bộ chủ đề
       window.deleteTopic = async (topicToDelete, event) => {
-        event.stopPropagation(); // Ngăn sự kiện click lan ra ngoài làm đổi chủ đề
+        event.stopPropagation(); // Ngăn click lan ra ngoài làm đổi chủ đề
 
         if (topicToDelete === 'General') {
           alert('Bạn không thể xóa chủ đề mặc định!');
@@ -548,20 +554,13 @@
         const confirmMsg = `Bạn có chắc chắn muốn xóa chủ đề "${topicToDelete}" không?\nToàn bộ từ vựng trong chủ đề này sẽ bị xóa vĩnh viễn.`;
         if (confirm(confirmMsg)) {
           try {
-            // Tìm tất cả từ vựng thuộc chủ đề này
             const wordsToDelete = allWords.filter(
               (w) => w.topic === topicToDelete
             );
-
-            // Thực hiện xóa từng từ trên Firebase
             for (const word of wordsToDelete) {
               await deleteDoc(doc(db, 'vocabularies', word.id));
             }
-
-            // Loại bỏ chủ đề khỏi mảng local
             topicsArray = topicsArray.filter((t) => t !== topicToDelete);
-
-            // Nếu đang xem chủ đề bị xóa, nhảy về General
             if (currentTopic === topicToDelete) {
               window.switchTopic('General');
             } else {
@@ -574,6 +573,7 @@
         }
       };
 
+      // Hàm thêm từ vựng
       window.addWord = async () => {
         const word = document.getElementById('wordInput').value.trim();
         const type = document.getElementById('typeInput').value;
@@ -598,10 +598,13 @@
           document.getElementById('meaningInput').value = '';
         } catch (error) {
           console.error('Lỗi thêm từ vựng: ', error);
-          alert('Đã xảy ra lỗi khi lưu dữ liệu!');
+          alert(
+            'Đã xảy ra lỗi khi lưu dữ liệu! Bạn hãy kiểm tra xem Database đã chọn Test Mode chưa nhé.'
+          );
         }
       };
 
+      // Hàm xóa từ vựng
       window.deleteWord = async (docId) => {
         if (confirm('Bạn có chắc chắn muốn xóa từ này?')) {
           try {
@@ -612,6 +615,7 @@
         }
       };
 
+      // Hàm hiển thị lưới từ vựng
       function renderVocab() {
         const grid = document.getElementById('vocabGrid');
         grid.innerHTML = '';
